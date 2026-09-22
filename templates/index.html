@@ -1,0 +1,9 @@
+<!doctype html>
+<html><head><title>Campus Events</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><header><nav><strong>Campus Events</strong><a href="{{ url_for('organizer_login_page') }}">Organizer Portal</a></nav></header>
+<main class="container"><section class="hero"><p class="eyebrow">EVENT TICKETING</p><h1>Find your next campus event.</h1><p>Register online and receive a signed QR ticket.</p></section>
+<section class="grid">{% for event in events %}{% set remaining=event["capacity"]-event["registered"] %}
+<article class="card"><span class="badge">{% if remaining>0 %}{{ remaining }} seats left{% else %}FULL{% endif %}</span>
+<h2>{{ event["name"] }}</h2><p>{{ event["description"] }}</p><p class="muted"><b>Venue:</b> {{ event["venue"] }}<br><b>Starts:</b> {{ event["starts_at"] }}</p>
+<a class="button" href="{{ url_for('event_page', event_id=event['id']) }}">Register</a></article>
+{% endfor %}</section></main></body></html>

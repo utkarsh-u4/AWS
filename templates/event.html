@@ -1,0 +1,13 @@
+<!doctype html>
+<html><head><title>{{ event["name"] }}</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><header><nav><a href="{{ url_for('home') }}">← Events</a><a href="{{ url_for('organizer_login_page') }}">Organizer Portal</a></nav></header>
+<main class="container narrow"><article class="card">{% set remaining=event["capacity"]-event["registered"] %}
+<span class="badge">{% if remaining>0 %}{{ remaining }} seats remaining{% else %}REGISTRATION CLOSED{% endif %}</span>
+<h1>{{ event["name"] }}</h1><p>{{ event["description"] }}</p><div class="info"><p><b>Venue</b><br>{{ event["venue"] }}</p><p><b>Start</b><br>{{ event["starts_at"] }}</p></div>
+{% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+{% if remaining>0 %}<form method="post" action="{{ url_for('register',event_id=event['id']) }}">
+<label>Full name<input name="name" required maxlength="100"></label>
+<label>Email<input type="email" name="email" required maxlength="200"></label>
+<button class="button" type="submit">Register & Get QR Ticket</button></form>
+{% else %}<div class="alert">This event has reached maximum venue capacity.</div>{% endif %}
+</article></main></body></html>

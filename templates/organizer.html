@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><title>Organizer Check-In</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"><script src="https://unpkg.com/html5-qrcode" defer></script></head>
+<body><header><nav><strong>Organizer Check-In</strong><form method="post" action="{{ url_for('organizer_logout') }}"><button class="link-button">Log out</button></form></nav></header>
+<main class="container"><div class="two-col"><section class="card"><p class="eyebrow">LIVE ENTRY</p><h1>Scan Ticket</h1>
+<div id="reader"></div><p class="muted">Allow camera access and point it at the student's QR ticket.</p>
+<label>Manual token fallback<textarea id="manualToken" placeholder="Paste token for testing"></textarea></label><button class="button" id="manualBtn">Verify Token</button></section>
+<section><div id="result" class="result">Ready to scan</div><div class="grid">{% for event in events %}<article class="card"><h3>{{ event["name"] }}</h3><p>{{ event["registered"] }}/{{ event["capacity"] }} registered</p><p><b>{{ event["checked_in"] }}</b> checked in</p></article>{% endfor %}</div></section></div></main>
+<script>
+window.addEventListener("DOMContentLoaded",()=>{const result=document.getElementById("result"), manual=document.getElementById("manualToken");
+async function verifyToken(token){result.className="result loading";result.textContent="Verifying ticket...";
+try{const r=await fetch("{{ url_for('check_in') }}",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token})});const d=await r.json();
+result.className="result "+(d.status==="CHECKED-IN"?"good":d.status==="ALREADY USED"?"warning":"bad");
+result.innerHTML="<strong>"+(d.status||"ERROR")+"</strong><div>"+(d.message||"")+"</div>"+(d.attendee?"<div><b>Attendee:</b> "+d.attendee+"</div>":"")+(d.event?"<div><b>Event:</b> "+d.event+"</div>":"")+(d.checkedInAt?"<div><b>Time:</b> "+new Date(d.checkedInAt).toLocaleString()+"</div>":"");
+}catch(e){result.className="result bad";result.textContent="Could not reach the server.";}}
+document.getElementById("manualBtn").onclick=()=>{const t=manual.value.trim();if(t)verifyToken(t)};
+function onScanSuccess(text){verifyToken(text)}
+if(window.Html5Qrcode){const scanner=new Html5Qrcode("reader");scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},onScanSuccess,()=>{}).catch(()=>{result.className="result bad";result.textContent="Camera could not start. Use manual token input.";});}});
+</script></body></html>

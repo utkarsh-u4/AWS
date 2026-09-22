@@ -1,0 +1,9 @@
+<!doctype html>
+<html><head><title>Ticket Confirmed</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><header><nav><a href="{{ url_for('home') }}">Campus Events</a><a href="{{ url_for('organizer_login_page') }}">Organizer Portal</a></nav></header>
+<main class="container narrow"><article class="card center"><div class="success-mark">✓</div><h1>Registration confirmed</h1>
+<p>{{ ticket["name"] }}, your ticket for <b>{{ event["name"] }}</b> is ready.</p><img class="qr" src="{{ qr_data_url }}" alt="QR ticket">
+{% if email_sent %}<div class="alert success">Confirmation email sent to {{ ticket["email"] }}.</div>
+{% else %}<div class="alert">SMTP is not configured. Use the token below for local scanner testing.</div>{% endif %}
+<details><summary>Developer testing token</summary><textarea readonly>{{ token }}</textarea></details>
+<a class="button secondary" href="{{ url_for('home') }}">Back to events</a></article></main></body></html>
